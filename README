@@ -26,9 +26,11 @@ Ruby 1.9 or higher
 Installation:
 -------------
 
+# from rubygems (https://rubygems.org/gems/telerivet):
+gem install telerivet
+
 # from source:
 gem build telerivet.gemspec
-
 gem install telerivet
 
 Example Usage:
