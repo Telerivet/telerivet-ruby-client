@@ -56,14 +56,16 @@ class API
         end
                 
         cls = get_request_class(method)        
-        request = cls.new(uri)
+        request = cls.new(uri.request_uri)
 
         request['User-Agent'] = "Telerivet Ruby Client/#{@@client_version} Ruby/#{RUBY_VERSION} OS/#{RUBY_PLATFORM}"
         request.basic_auth(@api_key, "")
 
         if has_post_data
             request.set_content_type("application/json")           
-            request.body = JSON.dump(params)            
+            if params != nil
+                request.body = JSON.dump(params)            
+            end
         end
             
         @num_requests += 1
