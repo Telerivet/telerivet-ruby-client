@@ -21,11 +21,13 @@ class Entity
         end
     end
     
-    def load_data()    
+    def load()    
         if !@is_loaded
             @is_loaded = true
             set_data(@api.do_request('GET', get_base_api_path()))
+            @data.merge!(@dirty)
         end
+        self
     end
         
     def vars
@@ -34,21 +36,17 @@ class Entity
         
     def get(name)        
         if @data.has_key?(name)
-            return @data[name]
+            return @data[name]        
         elsif @is_loaded
             return nil
         end
 
-        load_data()
-        
+        load()
+
         return @data[name]
-    end
+    end    
     
     def set(name, value)
-        if !@is_loaded
-            loadData()
-        end
-        
         @data[name] = value
         @dirty[name] = value
     end

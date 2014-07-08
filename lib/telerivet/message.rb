@@ -81,7 +81,7 @@ module Telerivet
 #           if available.
 #       * Read-only
 #   
-#   - price
+#   - price (number)
 #       * The price of this message, if known. By convention, message prices are negative.
 #       * Read-only
 #   
@@ -123,7 +123,7 @@ class Message < Entity
     #     bool
     #
     def has_label?(label)
-        load_data()
+        load()
         return @label_ids_set.has_key?(label.id)
     end
       

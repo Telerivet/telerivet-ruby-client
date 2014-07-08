@@ -72,7 +72,7 @@ module Telerivet
 #       * Number of times this scheduled message has already been sent
 #       * Read-only
 #   
-#   - is_template
+#   - is_template (bool)
 #       * Set to true if Telerivet will render variables like [[contact.name]] in the message
 #           content, false otherwise
 #       * Read-only

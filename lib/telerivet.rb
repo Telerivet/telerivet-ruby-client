@@ -5,13 +5,10 @@ require_relative 'telerivet/apicursor'
 
 module Telerivet
 
-#
-# 
-#
 class API    
     attr_reader :num_requests
 
-    @@client_version = '1.0.2'
+    @@client_version = '1.1.0'
     
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -89,7 +86,7 @@ class API
             return res    
         end
     end
-    
+
     #
     # Retrieves the Telerivet project with the given ID.
     # 
@@ -103,9 +100,25 @@ class API
     #
     def get_project_by_id(id)
         require_relative 'telerivet/project'
-        Project.new(self, {'id' => id}, false)
+        Project.new(self, self.do_request("GET", get_base_api_path() + "/projects/#{id}"))
     end
-    
+
+    #
+    # Initializes the Telerivet project with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the project -- see <https://telerivet.com/dashboard/api>
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Project
+    #
+    def init_project_by_id(id)
+        require_relative 'telerivet/project'
+        return Project.new(self, {'id' => id}, false)
+    end
+
     #
     # Queries projects accessible to the current user account.
     # 
@@ -140,8 +153,13 @@ class API
     #
     def query_projects(options = nil)
         require_relative 'telerivet/project'
-        cursor(Project, '/projects', options)
+        self.cursor(Project, get_base_api_path() + "/projects", options)
     end
+
+    def get_base_api_path()
+        ""
+    end
+ 
         
     def cursor(item_cls, path, options)
         APICursor.new(self, item_cls, path, options)

@@ -311,8 +311,6 @@ class Project < Entity
     #
     # Retrieves the contact with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Contact.
-    # 
     # Arguments:
     #   - id
     #       * ID of the contact
@@ -322,6 +320,22 @@ class Project < Entity
     #     Telerivet::Contact
     #
     def get_contact_by_id(id)
+        require_relative 'contact'
+        Contact.new(@api, @api.do_request("GET", get_base_api_path() + "/contacts/#{id}"))
+    end
+
+    #
+    # Initializes the Telerivet contact with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the contact
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Contact
+    #
+    def init_contact_by_id(id)
         require_relative 'contact'
         return Contact.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -377,8 +391,6 @@ class Project < Entity
     #
     # Retrieves the phone with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Phone.
-    # 
     # Arguments:
     #   - id
     #       * ID of the phone - see <https://telerivet.com/dashboard/api>
@@ -388,6 +400,22 @@ class Project < Entity
     #     Telerivet::Phone
     #
     def get_phone_by_id(id)
+        require_relative 'phone'
+        Phone.new(@api, @api.do_request("GET", get_base_api_path() + "/phones/#{id}"))
+    end
+
+    #
+    # Initializes the phone with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the phone - see <https://telerivet.com/dashboard/api>
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Phone
+    #
+    def init_phone_by_id(id)
         require_relative 'phone'
         return Phone.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -459,8 +487,6 @@ class Project < Entity
     #
     # Retrieves the message with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Message.
-    # 
     # Arguments:
     #   - id
     #       * ID of the message
@@ -470,6 +496,22 @@ class Project < Entity
     #     Telerivet::Message
     #
     def get_message_by_id(id)
+        require_relative 'message'
+        Message.new(@api, @api.do_request("GET", get_base_api_path() + "/messages/#{id}"))
+    end
+
+    #
+    # Initializes the Telerivet message with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the message
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Message
+    #
+    def init_message_by_id(id)
         require_relative 'message'
         return Message.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -530,8 +572,6 @@ class Project < Entity
     #
     # Retrieves the group with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Group.
-    # 
     # Arguments:
     #   - id
     #       * ID of the group
@@ -541,6 +581,22 @@ class Project < Entity
     #     Telerivet::Group
     #
     def get_group_by_id(id)
+        require_relative 'group'
+        Group.new(@api, @api.do_request("GET", get_base_api_path() + "/groups/#{id}"))
+    end
+
+    #
+    # Initializes the group with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the group
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Group
+    #
+    def init_group_by_id(id)
         require_relative 'group'
         return Group.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -601,8 +657,6 @@ class Project < Entity
     #
     # Retrieves the label with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Label.
-    # 
     # Arguments:
     #   - id
     #       * ID of the label
@@ -612,6 +666,22 @@ class Project < Entity
     #     Telerivet::Label
     #
     def get_label_by_id(id)
+        require_relative 'label'
+        Label.new(@api, @api.do_request("GET", get_base_api_path() + "/labels/#{id}"))
+    end
+
+    #
+    # Initializes the label with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the label
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Label
+    #
+    def init_label_by_id(id)
         require_relative 'label'
         return Label.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -672,8 +742,6 @@ class Project < Entity
     #
     # Retrieves the data table with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the DataTable.
-    # 
     # Arguments:
     #   - id
     #       * ID of the data table
@@ -683,6 +751,22 @@ class Project < Entity
     #     Telerivet::DataTable
     #
     def get_data_table_by_id(id)
+        require_relative 'datatable'
+        DataTable.new(@api, @api.do_request("GET", get_base_api_path() + "/tables/#{id}"))
+    end
+
+    #
+    # Initializes the data table with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the data table
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::DataTable
+    #
+    def init_data_table_by_id(id)
         require_relative 'datatable'
         return DataTable.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -735,9 +819,6 @@ class Project < Entity
     #
     # Retrieves the scheduled message with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the
-    # ScheduledMessage.
-    # 
     # Arguments:
     #   - id
     #       * ID of the scheduled message
@@ -747,6 +828,22 @@ class Project < Entity
     #     Telerivet::ScheduledMessage
     #
     def get_scheduled_message_by_id(id)
+        require_relative 'scheduledmessage'
+        ScheduledMessage.new(@api, @api.do_request("GET", get_base_api_path() + "/scheduled/#{id}"))
+    end
+
+    #
+    # Initializes the scheduled message with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the scheduled message
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::ScheduledMessage
+    #
+    def init_scheduled_message_by_id(id)
         require_relative 'scheduledmessage'
         return ScheduledMessage.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -798,8 +895,6 @@ class Project < Entity
     #
     # Retrieves the service with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the Service.
-    # 
     # Arguments:
     #   - id
     #       * ID of the service
@@ -809,6 +904,22 @@ class Project < Entity
     #     Telerivet::Service
     #
     def get_service_by_id(id)
+        require_relative 'service'
+        Service.new(@api, @api.do_request("GET", get_base_api_path() + "/services/#{id}"))
+    end
+
+    #
+    # Initializes the service with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the service
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Service
+    #
+    def init_service_by_id(id)
         require_relative 'service'
         return Service.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
@@ -871,9 +982,6 @@ class Project < Entity
     #
     # Retrieves the mobile money receipt with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the
-    # MobileMoneyReceipt.
-    # 
     # Arguments:
     #   - id
     #       * ID of the mobile money receipt
@@ -884,7 +992,92 @@ class Project < Entity
     #
     def get_receipt_by_id(id)
         require_relative 'mobilemoneyreceipt'
+        MobileMoneyReceipt.new(@api, @api.do_request("GET", get_base_api_path() + "/receipts/#{id}"))
+    end
+
+    #
+    # Initializes the mobile money receipt with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the mobile money receipt
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::MobileMoneyReceipt
+    #
+    def init_receipt_by_id(id)
+        require_relative 'mobilemoneyreceipt'
         return MobileMoneyReceipt.new(@api, {'project_id' => self.id, 'id' => id}, false)
+    end
+
+    #
+    # Queries custom routes that can be used to send messages (not including Phones).
+    # 
+    # Arguments:
+    #   - options (Hash)
+    #     
+    #     - name
+    #         * Filter routes by name
+    #         * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+    #             name[lt], name[lte]
+    #     
+    #     - sort
+    #         * Sort the results based on a field
+    #         * Allowed values: default, name
+    #         * Default: default
+    #     
+    #     - sort_dir
+    #         * Sort the results in ascending or descending order
+    #         * Allowed values: asc, desc
+    #         * Default: asc
+    #     
+    #     - page_size (int)
+    #         * Number of results returned per page (max 200)
+    #         * Default: 50
+    #     
+    #     - offset (int)
+    #         * Number of items to skip from beginning of result set
+    #         * Default: 0
+    #   
+    # Returns:
+    #     Telerivet::APICursor (of Telerivet::Route)
+    #
+    def query_routes(options = nil)
+        require_relative 'route'
+        @api.cursor(Route, get_base_api_path() + "/routes", options)
+    end
+
+    #
+    # Gets a custom route by ID
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the route
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Route
+    #
+    def get_route_by_id(id)
+        require_relative 'route'
+        Route.new(@api, @api.do_request("GET", get_base_api_path() + "/routes/#{id}"))
+    end
+
+    #
+    # Initializes a custom route by ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the route
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Route
+    #
+    def init_route_by_id(id)
+        require_relative 'route'
+        return Route.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
 
     #

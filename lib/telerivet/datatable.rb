@@ -4,8 +4,8 @@ module Telerivet
 #
 # Represents a custom data table that can store arbitrary rows.
 # 
-# For example, poll services use data tables to store a row for each response.
-# 
+# For example, poll services use data tables to store a row for each
+# response.
 # 
 # DataTables are schemaless -- each row simply stores custom variables. Each
 # variable name is equivalent to a different "column" of the data table.
@@ -103,8 +103,6 @@ class DataTable < Entity
     #
     # Retrieves the row in the given table with the given ID.
     # 
-    # Note: This does not make any API requests until you access a property of the DataRow.
-    # 
     # Arguments:
     #   - id
     #       * ID of the row
@@ -114,6 +112,22 @@ class DataTable < Entity
     #     Telerivet::DataRow
     #
     def get_row_by_id(id)
+        require_relative 'datarow'
+        DataRow.new(@api, @api.do_request("GET", get_base_api_path() + "/rows/#{id}"))
+    end
+
+    #
+    # Initializes the row in the given table with the given ID, without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the row
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::DataRow
+    #
+    def init_row_by_id(id)
         require_relative 'datarow'
         return DataRow.new(@api, {'project_id' => self.project_id, 'table_id' => self.id, 'id' => id}, false)
     end

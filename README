@@ -43,7 +43,7 @@ PROJECT_ID = 'YOUR_PROJECT_ID'
 
 tr = Telerivet::API.new(API_KEY)
 
-project = tr.get_project_by_id(PROJECT_ID)
+project = tr.init_project_by_id(PROJECT_ID)
 
 # Send a SMS message
 project.send_message({

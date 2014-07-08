@@ -102,6 +102,9 @@ class Service < Entity
     #     - contact_id
     #         * The ID of the contact this service is triggered for
     #         * Required if context is 'contact'
+    #   
+    # Returns:
+    #     object
     #
     def invoke(options)        
         invoke_result = @api.do_request('POST', get_base_api_path() + '/invoke', options)

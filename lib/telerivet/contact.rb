@@ -59,7 +59,7 @@ class Contact < Entity
     #     bool
     #
     def is_in_group?(group)
-        load_data()
+        load()
         return @group_ids_set.has_key?(group.id)
     end
       
