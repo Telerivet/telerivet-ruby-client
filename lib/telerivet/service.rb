@@ -67,6 +67,12 @@ module Telerivet
 #       * ID of the group containing contacts that have completed an interaction with this
 #           service (currently only used for polls)
 #       * Read-only
+#   
+#   - questions (array)
+#       * Array of objects describing each question in a poll (only used for polls). Each
+#           object has the properties "id" (the question ID), "content" (the text of the
+#           question), and "question_type" (either "multiple_choice", "missed_call", or "open").
+#       * Read-only
 #
 class Service < Entity
 
@@ -288,6 +294,10 @@ class Service < Entity
 
     def respondent_group_id
         get('respondent_group_id')
+    end
+
+    def questions
+        get('questions')
     end
 
     def get_base_api_path()

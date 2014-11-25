@@ -22,6 +22,10 @@ module Telerivet
 #       * Type of this phone/gateway (e.g. android, twilio, nexmo, etc)
 #       * Read-only
 #   
+#   - country
+#       * 2-letter country code (ISO 3166-1 alpha-2) where phone is from
+#       * Read-only
+#   
 #   - time_created (UNIX timestamp)
 #       * Time the phone was created in Telerivet
 #       * Read-only
@@ -174,6 +178,10 @@ class Phone < Entity
 
     def phone_type
         get('phone_type')
+    end
+
+    def country
+        get('country')
     end
 
     def time_created

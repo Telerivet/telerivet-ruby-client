@@ -182,6 +182,33 @@ class Message < Entity
     end
 
     #
+    # Resends a message, for example if the message failed to send or if it was not delivered. If
+    # the message was originally in the queued, retrying, failed, or cancelled states, then
+    # Telerivet will return the same message object. Otherwise, Telerivet will create and return a
+    # new message object.
+    # 
+    # Returns:
+    #     Telerivet::Message
+    #
+    def resend()
+        require_relative 'message'
+        Message.new(@api, @api.do_request("POST", get_base_api_path() + "/resend"))
+    end
+
+    #
+    # Cancels sending a message that has not yet been sent. Returns the updated message object.
+    # Only valid for outgoing messages that are currently in the queued, retrying, or cancelled
+    # states. For other messages, the API will return an error with the code 'not_cancellable'.
+    # 
+    # Returns:
+    #     Telerivet::Message
+    #
+    def cancel()
+        require_relative 'message'
+        Message.new(@api, @api.do_request("POST", get_base_api_path() + "/cancel"))
+    end
+
+    #
     # Deletes this message.
     #
     def delete()

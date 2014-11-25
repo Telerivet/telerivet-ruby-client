@@ -1,6 +1,6 @@
 Ruby client library for Telerivet REST API
 
-http://telerivet.com
+http://telerivet.com/api
 
 Overview:
 ---------
@@ -15,9 +15,10 @@ You can use it to:
 - control automated services
 - much more
 
-All API methods are fully documented in the comments of the Ruby source files;
-to learn what functionality is available, start with lib/telerivet.rb,
-lib/telerivet/project.rb, and lib/telerivet/apicursor.rb .
+All API methods are fully documented at http://telerivet.com/api/rest/ruby ,
+as well as in the comments of the Ruby source files. To learn what functionality is 
+available, start with lib/telerivet.rb, lib/telerivet/project.rb, 
+and lib/telerivet/apicursor.rb .
 
 System Requirements:
 --------------------
