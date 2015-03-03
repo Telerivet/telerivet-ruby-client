@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'telerivet'
-  s.version     = '1.1.0'
-  s.date        = '2014-07-07'
+  s.version     = '1.1.4'
+  s.date        = '2015-03-03'
   s.summary     = "Telerivet REST API Client"
   s.description = "Ruby client library for Telerivet REST API"
   s.authors     = ["Jesse Young"]
