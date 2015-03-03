@@ -8,7 +8,7 @@ module Telerivet
 class API    
     attr_reader :num_requests
 
-    @@client_version = '1.1.2'
+    @@client_version = '1.1.4'
     
     #
     # Initializes a client handle to the Telerivet REST API.

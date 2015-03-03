@@ -26,6 +26,11 @@ module Telerivet
 #       * 2-letter country code (ISO 3166-1 alpha-2) where phone is from
 #       * Read-only
 #   
+#   - send_paused (bool)
+#       * True if sending messages is currently paused, false if the phone can currently send
+#           messages
+#       * Updatable via API
+#   
 #   - time_created (UNIX timestamp)
 #       * Time the phone was created in Telerivet
 #       * Read-only
@@ -182,6 +187,14 @@ class Phone < Entity
 
     def country
         get('country')
+    end
+
+    def send_paused
+        get('send_paused')
+    end
+
+    def send_paused=(value)
+        set('send_paused', value)
     end
 
     def time_created

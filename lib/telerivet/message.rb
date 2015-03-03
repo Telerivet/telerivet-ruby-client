@@ -106,6 +106,10 @@ module Telerivet
 #       * ID of the contact that sent or received the message
 #       * Read-only
 #   
+#   - route_id (string, max 34 characters)
+#       * ID of the route that sent the message (if applicable)
+#       * Read-only
+#   
 #   - project_id
 #       * ID of the project this contact belongs to
 #       * Read-only
@@ -187,12 +191,18 @@ class Message < Entity
     # Telerivet will return the same message object. Otherwise, Telerivet will create and return a
     # new message object.
     # 
+    # Arguments:
+    #   - options (Hash)
+    #     
+    #     - route_id
+    #         * ID of the phone or route to send the message from
+    #   
     # Returns:
     #     Telerivet::Message
     #
-    def resend()
+    def resend(options = nil)
         require_relative 'message'
-        Message.new(@api, @api.do_request("POST", get_base_api_path() + "/resend"))
+        Message.new(@api, @api.do_request("POST", get_base_api_path() + "/resend", options))
     end
 
     #
@@ -301,6 +311,10 @@ class Message < Entity
 
     def contact_id
         get('contact_id')
+    end
+
+    def route_id
+        get('route_id')
     end
 
     def project_id

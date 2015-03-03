@@ -213,6 +213,55 @@ class Project < Entity
     end
 
     #
+    # Add an incoming message to Telerivet. Acts the same as if the message was received by a
+    # phone. Also triggers any automated services that apply to the message.
+    # 
+    # Arguments:
+    #   - options (Hash)
+    #       * Required
+    #     
+    #     - content
+    #         * Content of the incoming message
+    #         * Required unless message_type is call
+    #     
+    #     - message_type
+    #         * Type of message
+    #         * Allowed values: sms, call
+    #         * Default: sms
+    #     
+    #     - from_number
+    #         * Phone number that sent the incoming message
+    #         * Required
+    #     
+    #     - phone_id
+    #         * ID of the phone that received the message
+    #         * Required
+    #     
+    #     - to_number
+    #         * Phone number that the incoming message was sent to
+    #         * Default: phone number of the phone that received the message
+    #     
+    #     - simulated (bool)
+    #         * If true, Telerivet will not send automated replies to actual phones
+    #     
+    #     - starred (bool)
+    #         * True if this message should be starred
+    #     
+    #     - label_ids (array)
+    #         * Array of IDs of labels to add to this message (maximum 5)
+    #     
+    #     - vars (Hash)
+    #         * Custom variables to set for this message
+    #   
+    # Returns:
+    #     Telerivet::Message
+    #
+    def receive_message(options)
+        require_relative 'message'
+        Message.new(@api, @api.do_request("POST", get_base_api_path() + "/messages/receive", options))
+    end
+
+    #
     # Retrieves OR creates and possibly updates a contact by name or phone number.
     # 
     # If a phone number is provided, Telerivet will search for an existing
