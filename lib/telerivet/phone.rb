@@ -57,6 +57,11 @@ module Telerivet
 #           the last time it connected to Telerivet (only present for Android phones)
 #       * Read-only
 #   
+#   - internet_type
+#       * String describing the current type of internet connectivity for an Android phone,
+#           for example WIFI or MOBILE (only present for Android phones)
+#       * Read-only
+#   
 #   - app_version
 #       * Currently installed version of Telerivet Android app (only present for Android
 #           phones)
@@ -215,6 +220,10 @@ class Phone < Entity
 
     def charging
         get('charging')
+    end
+
+    def internet_type
+        get('internet_type')
     end
 
     def app_version

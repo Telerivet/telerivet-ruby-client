@@ -94,7 +94,7 @@ class Service < Entity
     #     
     #     - context
     #         * The name of the context in which this service is invoked
-    #         * Allowed values: message, contact, project, receipt
+    #         * Allowed values: message, contact, project
     #         * Required
     #     
     #     - event

@@ -89,6 +89,15 @@ module Telerivet
 #       * The currency of the message price, if applicable.
 #       * Read-only
 #   
+#   - duration (number)
+#       * The duration of the call in seconds, if known, or -1 if the call was not answered.
+#       * Read-only
+#   
+#   - ring_time (number)
+#       * The length of time the call rang in seconds before being answered or hung up, if
+#           known.
+#       * Read-only
+#   
 #   - mms_parts (array)
 #       * A list of parts in the MMS message, the same as returned by the
 #           [getMMSParts](#Message.getMMSParts) method.
@@ -108,6 +117,10 @@ module Telerivet
 #   
 #   - route_id (string, max 34 characters)
 #       * ID of the route that sent the message (if applicable)
+#       * Read-only
+#   
+#   - user_id (string, max 34 characters)
+#       * ID of the Telerivet user who sent the message (if applicable)
 #       * Read-only
 #   
 #   - project_id
@@ -301,6 +314,14 @@ class Message < Entity
         get('price_currency')
     end
 
+    def duration
+        get('duration')
+    end
+
+    def ring_time
+        get('ring_time')
+    end
+
     def mms_parts
         get('mms_parts')
     end
@@ -315,6 +336,10 @@ class Message < Entity
 
     def route_id
         get('route_id')
+    end
+
+    def user_id
+        get('user_id')
     end
 
     def project_id

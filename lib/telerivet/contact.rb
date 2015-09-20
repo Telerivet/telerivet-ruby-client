@@ -19,14 +19,38 @@ module Telerivet
 #       * Time the contact was added in Telerivet
 #       * Read-only
 #   
+#   - send_blocked (bool)
+#       * True if Telerivet is blocked from sending messages to this contact
+#       * Updatable via API
+#   
 #   - last_message_time (UNIX timestamp)
 #       * Last time the contact sent or received a message (null if no messages have been sent
 #           or received)
 #       * Read-only
 #   
+#   - last_incoming_message_time (UNIX timestamp)
+#       * Last time a message was received from this contact
+#       * Read-only
+#   
+#   - last_outgoing_message_time (UNIX timestamp)
+#       * Last time a message was sent to this contact
+#       * Read-only
+#   
+#   - message_count (int)
+#       * Total number of non-deleted messages sent to or received from this contact
+#       * Read-only
+#   
+#   - incoming_message_count (int)
+#       * Number of messages received from this contact
+#       * Read-only
+#   
+#   - outgoing_message_count (int)
+#       * Number of messages sent to this contact
+#       * Read-only
+#   
 #   - last_message_id
-#       * ID of the last message sent or received by this contact (null if no messages have
-#           been sent or received)
+#       * ID of the last message sent to or received from this contact (null if no messages
+#           have been sent or received)
 #       * Read-only
 #   
 #   - default_route_id
@@ -164,6 +188,9 @@ class Contact < Entity
     #         * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
     #             name[lt], name[lte]
     #     
+    #     - dynamic (bool)
+    #         * Filter groups by dynamic/non-dynamic
+    #     
     #     - sort
     #         * Sort the results based on a field
     #         * Allowed values: default, name
@@ -245,12 +272,6 @@ class Contact < Entity
     #     - time_created (UNIX timestamp)
     #         * Filter data rows by the time they were created
     #         * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
-    #     
-    #     - vars (Hash)
-    #         * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
-    #         * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-    #             vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-    #             vars[foo][min], vars[foo][max]
     #     
     #     - sort
     #         * Sort the results based on a field
@@ -359,8 +380,36 @@ class Contact < Entity
         get('time_created')
     end
 
+    def send_blocked
+        get('send_blocked')
+    end
+
+    def send_blocked=(value)
+        set('send_blocked', value)
+    end
+
     def last_message_time
         get('last_message_time')
+    end
+
+    def last_incoming_message_time
+        get('last_incoming_message_time')
+    end
+
+    def last_outgoing_message_time
+        get('last_outgoing_message_time')
+    end
+
+    def message_count
+        get('message_count')
+    end
+
+    def incoming_message_count
+        get('incoming_message_count')
+    end
+
+    def outgoing_message_count
+        get('outgoing_message_count')
     end
 
     def last_message_id
