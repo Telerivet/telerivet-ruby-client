@@ -31,6 +31,14 @@ module Telerivet
 #       * Custom variables stored for this data row
 #       * Updatable via API
 #   
+#   - time_created (UNIX timestamp)
+#       * The time this row was created in Telerivet
+#       * Read-only
+#   
+#   - time_updated (UNIX timestamp)
+#       * The time this row was last updated in Telerivet
+#       * Read-only
+#   
 #   - table_id
 #       * ID of the table this data row belongs to
 #       * Read-only
@@ -72,6 +80,14 @@ class DataRow < Entity
 
     def from_number=(value)
         set('from_number', value)
+    end
+
+    def time_created
+        get('time_created')
+    end
+
+    def time_updated
+        get('time_updated')
     end
 
     def table_id

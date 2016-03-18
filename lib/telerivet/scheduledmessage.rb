@@ -40,6 +40,11 @@ module Telerivet
 #       * ID of the phone or route the message will be sent from
 #       * Read-only
 #   
+#   - service_id (string, max 34 characters)
+#       * The service associated with this message (for voice calls, the service defines the
+#           call flow)
+#       * Read-only
+#   
 #   - message_type
 #       * Type of scheduled message
 #       * Allowed values: sms, ussd
@@ -134,6 +139,10 @@ class ScheduledMessage < Entity
 
     def route_id
         get('route_id')
+    end
+
+    def service_id
+        get('service_id')
     end
 
     def message_type
