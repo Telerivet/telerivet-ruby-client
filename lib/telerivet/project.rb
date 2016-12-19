@@ -23,6 +23,10 @@ module Telerivet
 #           <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
 #       * Read-only
 #   
+#   - url_slug
+#       * Unique string used as a component of the project's URL in the Telerivet web app
+#       * Read-only
+#   
 #   - vars (Hash)
 #       * Custom variables stored for this project
 #       * Updatable via API
@@ -35,8 +39,14 @@ class Project < Entity
     #   - options (Hash)
     #       * Required
     #     
+    #     - message_type
+    #         * Type of message to send
+    #         * Allowed values: sms, ussd, call
+    #         * Default: sms
+    #     
     #     - content
-    #         * Content of the message to send
+    #         * Content of the message to send (if message_type=call, the text will be spoken
+    #             during a text-to-speech call)
     #         * Required if sending SMS message
     #     
     #     - to_number (string)
@@ -52,8 +62,29 @@ class Project < Entity
     #         * Default: default sender phone ID for your project
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call
-    #         * Required if sending voice call
+    #         * Service that defines the call flow of the voice call (when message_type=call)
+    #     
+    #     - audio_url
+    #         * The URL of an MP3 file to play when the contact answers the call (when
+    #             message_type=call).
+    #             
+    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             `content`, although you can optionally use `content` to indicate the script for the
+    #             audio.
+    #             
+    #             For best results, use an MP3 file containing only speech. Music is not
+    #             recommended because the audio quality will be low when played over a phone line.
+    #     
+    #     - tts_lang
+    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+    #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+    #         * Default: en-US
+    #     
+    #     - tts_voice
+    #         * The name of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: female, male
+    #         * Default: female
     #     
     #     - status_url
     #         * Webhook callback URL to be notified when message status changes
@@ -69,11 +100,6 @@ class Project < Entity
     #     - label_ids (array)
     #         * List of IDs of labels to add to this message
     #     
-    #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms, ussd, call
-    #         * Default: sms
-    #     
     #     - vars (Hash)
     #         * Custom variables to store with the message
     #     
@@ -82,6 +108,14 @@ class Project < Entity
     #             will attempt to send messages with higher priority numbers first (for example, so
     #             you can prioritize an auto-reply ahead of a bulk message to a large group).
     #         * Default: 1
+    #     
+    #     - user_id
+    #         * ID of the Telerivet user account that sent the message (use
+    #             [project.getUsers](#Project.getUsers) to look up user IDs). In order to use this
+    #             parameter, the user account associated with the API key must have administrator
+    #             permissions for the project, and the user account associated with the user_id
+    #             parameter must have access to the project.
+    #         * Default: User account associated with the API key
     #   
     # Returns:
     #     Telerivet::Message
@@ -98,6 +132,11 @@ class Project < Entity
     # Arguments:
     #   - options (Hash)
     #       * Required
+    #     
+    #     - message_type
+    #         * Type of message to send
+    #         * Allowed values: sms, call
+    #         * Default: sms
     #     
     #     - content
     #         * Content of the message to send
@@ -116,8 +155,29 @@ class Project < Entity
     #         * Default: default sender phone ID
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call
-    #         * Required if sending voice call
+    #         * Service that defines the call flow of the voice call (when message_type=call)
+    #     
+    #     - audio_url
+    #         * The URL of an MP3 file to play when the contact answers the call (when
+    #             message_type=call).
+    #             
+    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             `content`, although you can optionally use `content` to indicate the script for the
+    #             audio.
+    #             
+    #             For best results, use an MP3 file containing only speech. Music is not
+    #             recommended because the audio quality will be low when played over a phone line.
+    #     
+    #     - tts_lang
+    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+    #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+    #         * Default: en-US
+    #     
+    #     - tts_voice
+    #         * The name of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: female, male
+    #         * Default: female
     #     
     #     - status_url
     #         * Webhook callback URL to be notified when message status changes
@@ -132,11 +192,6 @@ class Project < Entity
     #         * Optionally excludes one contact from receiving the message (only when group_id is
     #             set)
     #     
-    #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms, call
-    #         * Default: sms
-    #     
     #     - is_template (bool)
     #         * Set to true to evaluate variables like [[contact.name]] in message content [(See
     #             available variables)](#variables)
@@ -149,9 +204,14 @@ class Project < Entity
     #     (associative array)
     #       - count_queued (int)
     #           * Number of messages queued to send
+    #       
+    #       - broadcast_id
+    #           * ID of broadcast created for this message batch. If count\_queued is 0 or 1, a
+    #               broadcast will not be created, and the broadcast\_id property will be null.
     #
     def send_messages(options)
-        return @api.do_request("POST", get_base_api_path() + "/messages/send_batch", options)
+        data = @api.do_request("POST", get_base_api_path() + "/messages/send_batch", options)
+        return data
     end
 
     #
@@ -162,6 +222,11 @@ class Project < Entity
     # Arguments:
     #   - options (Hash)
     #       * Required
+    #     
+    #     - message_type
+    #         * Type of message to send
+    #         * Allowed values: sms, ussd
+    #         * Default: sms
     #     
     #     - content
     #         * Content of the message to schedule
@@ -194,13 +259,29 @@ class Project < Entity
     #         * Default: default sender phone ID
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call
-    #         * Required if sending voice call
+    #         * Service that defines the call flow of the voice call (when message_type=call)
     #     
-    #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms, ussd
-    #         * Default: sms
+    #     - audio_url
+    #         * The URL of an MP3 file to play when the contact answers the call (when
+    #             message_type=call).
+    #             
+    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             `content`, although you can optionally use `content` to indicate the script for the
+    #             audio.
+    #             
+    #             For best results, use an MP3 file containing only speech. Music is not
+    #             recommended because the audio quality will be low when played over a phone line.
+    #     
+    #     - tts_lang
+    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+    #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+    #         * Default: en-US
+    #     
+    #     - tts_voice
+    #         * The name of the text-to-speech voice (when message_type=call)
+    #         * Allowed values: female, male
+    #         * Default: female
     #     
     #     - is_template (bool)
     #         * Set to true to evaluate variables like [[contact.name]] in message content
@@ -562,6 +643,9 @@ class Project < Entity
     #     - time_created[max] (UNIX timestamp)
     #         * Filter messages created before a particular time
     #     
+    #     - external_id
+    #         * Filter messages by ID from an external provider
+    #     
     #     - contact_id
     #         * ID of the contact who sent/received the message
     #     
@@ -624,6 +708,82 @@ class Project < Entity
     def init_message_by_id(id)
         require_relative 'message'
         return Message.new(@api, {'project_id' => self.id, 'id' => id}, false)
+    end
+
+    #
+    # Queries broadcasts within the given project.
+    # 
+    # Arguments:
+    #   - options (Hash)
+    #     
+    #     - time_created[min] (UNIX timestamp)
+    #         * Filter broadcasts created on or after a particular time
+    #     
+    #     - time_created[max] (UNIX timestamp)
+    #         * Filter broadcasts created before a particular time
+    #     
+    #     - last_message_time[min] (UNIX timestamp)
+    #         * Filter broadcasts with most recent message on or after a particular time
+    #     
+    #     - last_message_time[max] (UNIX timestamp)
+    #         * Filter broadcasts with most recent message before a particular time
+    #     
+    #     - sort
+    #         * Sort the results based on a field
+    #         * Allowed values: default, last_message_time
+    #         * Default: default
+    #     
+    #     - sort_dir
+    #         * Sort the results in ascending or descending order
+    #         * Allowed values: asc, desc
+    #         * Default: asc
+    #     
+    #     - page_size (int)
+    #         * Number of results returned per page (max 200)
+    #         * Default: 50
+    #     
+    #     - offset (int)
+    #         * Number of items to skip from beginning of result set
+    #         * Default: 0
+    #   
+    # Returns:
+    #     Telerivet::APICursor (of Telerivet::Broadcast)
+    #
+    def query_broadcasts(options = nil)
+        require_relative 'broadcast'
+        @api.cursor(Broadcast, get_base_api_path() + "/broadcasts", options)
+    end
+
+    #
+    # Retrieves the broadcast with the given ID.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the broadcast
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Broadcast
+    #
+    def get_broadcast_by_id(id)
+        require_relative 'broadcast'
+        Broadcast.new(@api, @api.do_request("GET", get_base_api_path() + "/broadcasts/#{id}"))
+    end
+
+    #
+    # Initializes the Telerivet broadcast with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the broadcast
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Broadcast
+    #
+    def init_broadcast_by_id(id)
+        require_relative 'broadcast'
+        return Broadcast.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
 
     #
@@ -977,7 +1137,7 @@ class Project < Entity
     #     
     #     - context
     #         * Filter services that can be invoked in a particular context
-    #         * Allowed values: message, contact, project
+    #         * Allowed values: message, call, contact, project
     #     
     #     - sort
     #         * Sort the results based on a field
@@ -1226,6 +1386,10 @@ class Project < Entity
 
     def timezone_id
         get('timezone_id')
+    end
+
+    def url_slug
+        get('url_slug')
     end
 
     def get_base_api_path()

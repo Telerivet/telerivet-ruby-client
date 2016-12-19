@@ -59,7 +59,7 @@ module Telerivet
 #       * Updatable via API
 #   
 #   - simulated (bool)
-#       * Whether this message is was simulated within Telerivet for testing (and not actually
+#       * Whether this message was simulated within Telerivet for testing (and not actually
 #           sent to or received by a real phone)
 #       * Read-only
 #   
@@ -98,6 +98,21 @@ module Telerivet
 #           known.
 #       * Read-only
 #   
+#   - audio_url
+#       * For voice calls, the URL of an MP3 file to play when the contact answers the call
+#       * Read-only
+#   
+#   - tts_lang
+#       * For voice calls, the language of the text-to-speech voice
+#       * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+#           de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+#       * Read-only
+#   
+#   - tts_voice
+#       * For voice calls, the text-to-speech voice
+#       * Allowed values: female, male
+#       * Read-only
+#   
 #   - mms_parts (array)
 #       * A list of parts in the MMS message, the same as returned by the
 #           [getMMSParts](#Message.getMMSParts) method.
@@ -122,6 +137,10 @@ module Telerivet
 #   
 #   - route_id (string, max 34 characters)
 #       * ID of the route that sent the message (if applicable)
+#       * Read-only
+#   
+#   - broadcast_id (string, max 34 characters)
+#       * ID of the broadcast that this message is part of (if applicable)
 #       * Read-only
 #   
 #   - user_id (string, max 34 characters)
@@ -327,6 +346,18 @@ class Message < Entity
         get('ring_time')
     end
 
+    def audio_url
+        get('audio_url')
+    end
+
+    def tts_lang
+        get('tts_lang')
+    end
+
+    def tts_voice
+        get('tts_voice')
+    end
+
     def mms_parts
         get('mms_parts')
     end
@@ -345,6 +376,10 @@ class Message < Entity
 
     def route_id
         get('route_id')
+    end
+
+    def broadcast_id
+        get('broadcast_id')
     end
 
     def user_id
