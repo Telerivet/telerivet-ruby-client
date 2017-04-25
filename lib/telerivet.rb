@@ -5,11 +5,11 @@ require_relative 'telerivet/apicursor'
 
 module Telerivet
 
-class API    
+class API
     attr_reader :num_requests
 
-    @@client_version = '1.2.0'
-    
+    @@client_version = '1.2.1'
+
     #
     # Initializes a client handle to the Telerivet REST API.
     # 
@@ -30,20 +30,20 @@ class API
     end
 
     public
-    
+
     def do_request(method, path, params = nil)
-        
+
         has_post_data = (method == 'POST' || method == 'PUT')
 
         url = @api_url + path
-        
+
         if !has_post_data and params != nil && params.length > 0
             url += '?' + URI.encode_www_form(get_url_params(params))
         end
-        
+
         uri = URI(url)
-        
-        if @session == nil            
+
+        if @session == nil
             @session = Net::HTTP.start(uri.host, uri.port,
               :use_ssl => @api_url.start_with?("https://"),
               :ca_file => File.dirname(__FILE__) + '/cacert.pem',
@@ -51,39 +51,43 @@ class API
               :open_timeout => 20,
             )
         end
-                
-        cls = get_request_class(method)        
+
+        cls = get_request_class(method)
         request = cls.new(uri.request_uri)
 
         request['User-Agent'] = "Telerivet Ruby Client/#{@@client_version} Ruby/#{RUBY_VERSION} OS/#{RUBY_PLATFORM}"
         request.basic_auth(@api_key, "")
 
         if has_post_data
-            request.set_content_type("application/json")           
+            request.set_content_type("application/json")
             if params != nil
-                request.body = JSON.dump(params)            
+                request.body = JSON.dump(params)
             end
         end
-            
+
         @num_requests += 1
 
-        response = @session.request(request)       
-        
-        res = JSON.parse(response.body)
-        
+        response = @session.request(request)
+
+        begin
+            res = JSON.parse(response.body)
+        rescue
+            raise IOError, "Unexpected response from Telerivet API (HTTP #{response.code}): #{response.body}"
+        end
+
         if res.has_key?("error")
             error = res['error']
             error_code = error['code']
-            
+
             if error_code == 'invalid_param'
                 raise InvalidParameterException, error['message'] #, error['code'], error['param'])
             elsif error_code == 'not_found'
                 raise NotFoundException, error['message'] #, error['code']);
             else
-                raise APIException, error['message'] #, error['code'])               
+                raise APIException, error['message'] #, error['code'])
             end
         else
-            return res    
+            return res
         end
     end
 
@@ -160,35 +164,34 @@ class API
         ""
     end
  
-        
     def cursor(item_cls, path, options)
         APICursor.new(self, item_cls, path, options)
     end
-    
+
     private
-    
+
     def encode_params_rec(param_name, value, res)
         return if value == nil
-        
+
         if value.kind_of?(Array)
-            value.each_index { |i| encode_params_rec("#{param_name}[#{i}]", value[i], res) }            
+            value.each_index { |i| encode_params_rec("#{param_name}[#{i}]", value[i], res) }
         elsif value.kind_of?(Hash)
-            value.each { |k,v| encode_params_rec("#{param_name}[#{k}]", v, res) }            
+            value.each { |k,v| encode_params_rec("#{param_name}[#{k}]", v, res) }
         elsif !!value == value
             res[param_name] = value ? 1 : 0
         else
             res[param_name] = value
         end
     end
-            
+
     def get_url_params(params)
         res = {}
         if params != nil
             params.each { |key,value| encode_params_rec(key, value, res) }
         end
-        return res    
+        return res
     end
-    
+
     def get_request_class(method)
         case method
         when 'GET' then return Net::HTTP::Get
@@ -198,7 +201,7 @@ class API
         else return nil
         end
     end
-    
+
 end
 
 class APIException < Exception
