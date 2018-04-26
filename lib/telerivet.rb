@@ -8,7 +8,7 @@ module Telerivet
 class API
     attr_reader :num_requests
 
-    @@client_version = '1.2.1'
+    @@client_version = '1.3.0'
 
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -158,6 +158,75 @@ class API
     def query_projects(options = nil)
         require_relative 'telerivet/project'
         self.cursor(Project, get_base_api_path() + "/projects", options)
+    end
+
+    #
+    # Retrieves the Telerivet organization with the given ID.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the organization -- see <https://telerivet.com/dashboard/api>
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Organization
+    #
+    def get_organization_by_id(id)
+        require_relative 'telerivet/organization'
+        Organization.new(self, self.do_request("GET", get_base_api_path() + "/organizations/#{id}"))
+    end
+
+    #
+    # Initializes the Telerivet organization with the given ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the organization -- see <https://telerivet.com/dashboard/api>
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::Organization
+    #
+    def init_organization_by_id(id)
+        require_relative 'telerivet/organization'
+        return Organization.new(self, {'id' => id}, false)
+    end
+
+    #
+    # Queries organizations accessible to the current user account.
+    # 
+    # Arguments:
+    #   - options (Hash)
+    #     
+    #     - name
+    #         * Filter organizations by name
+    #         * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+    #             name[lt], name[lte]
+    #     
+    #     - sort
+    #         * Sort the results based on a field
+    #         * Allowed values: default, name
+    #         * Default: default
+    #     
+    #     - sort_dir
+    #         * Sort the results in ascending or descending order
+    #         * Allowed values: asc, desc
+    #         * Default: asc
+    #     
+    #     - page_size (int)
+    #         * Number of results returned per page (max 200)
+    #         * Default: 50
+    #     
+    #     - offset (int)
+    #         * Number of items to skip from beginning of result set
+    #         * Default: 0
+    #   
+    # Returns:
+    #     Telerivet::APICursor (of Telerivet::Organization)
+    #
+    def query_organizations(options = nil)
+        require_relative 'telerivet/organization'
+        self.cursor(Organization, get_base_api_path() + "/organizations", options)
     end
 
     def get_base_api_path()

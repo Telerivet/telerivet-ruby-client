@@ -30,6 +30,10 @@ module Telerivet
 #   - vars (Hash)
 #       * Custom variables stored for this project
 #       * Updatable via API
+#   
+#   - organization_id (string, max 34 characters)
+#       * ID of the organization this project belongs to
+#       * Read-only
 #
 class Project < Entity
     #
@@ -45,8 +49,8 @@ class Project < Entity
     #         * Default: sms
     #     
     #     - content
-    #         * Content of the message to send (if message_type=call, the text will be spoken
-    #             during a text-to-speech call)
+    #         * Content of the message to send (if `message_type` is `call`, the text will be
+    #             spoken during a text-to-speech call)
     #         * Required if sending SMS message
     #     
     #     - to_number (string)
@@ -62,13 +66,14 @@ class Project < Entity
     #         * Default: default sender phone ID for your project
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call (when message_type=call)
+    #         * Service that defines the call flow of the voice call (when `message_type` is
+    #             `call`)
     #     
     #     - audio_url
     #         * The URL of an MP3 file to play when the contact answers the call (when
-    #             message_type=call).
+    #             `message_type` is `call`).
     #             
-    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             If `audio_url` is provided, the text-to-speech voice is not used to say
     #             `content`, although you can optionally use `content` to indicate the script for the
     #             audio.
     #             
@@ -76,7 +81,7 @@ class Project < Entity
     #             recommended because the audio quality will be low when played over a phone line.
     #     
     #     - tts_lang
-    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * The language of the text-to-speech voice (when `message_type` is `call`)
     #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
     #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
     #         * Default: en-US
@@ -155,13 +160,14 @@ class Project < Entity
     #         * Default: default sender phone ID
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call (when message_type=call)
+    #         * Service that defines the call flow of the voice call (when `message_type` is
+    #             `call`)
     #     
     #     - audio_url
     #         * The URL of an MP3 file to play when the contact answers the call (when
-    #             message_type=call).
+    #             `message_type` is `call`).
     #             
-    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             If `audio_url` is provided, the text-to-speech voice is not used to say
     #             `content`, although you can optionally use `content` to indicate the script for the
     #             audio.
     #             
@@ -169,7 +175,7 @@ class Project < Entity
     #             recommended because the audio quality will be low when played over a phone line.
     #     
     #     - tts_lang
-    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * The language of the text-to-speech voice (when `message_type` is `call`)
     #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
     #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
     #         * Default: en-US
@@ -206,8 +212,8 @@ class Project < Entity
     #           * Number of messages queued to send
     #       
     #       - broadcast_id
-    #           * ID of broadcast created for this message batch. If count\_queued is 0 or 1, a
-    #               broadcast will not be created, and the broadcast\_id property will be null.
+    #           * ID of broadcast created for this message batch. If `count_queued` is 0 or 1, a
+    #               broadcast will not be created, and the `broadcast_id` property will be null.
     #
     def send_messages(options)
         data = @api.do_request("POST", get_base_api_path() + "/messages/send_batch", options)
@@ -215,8 +221,8 @@ class Project < Entity
     end
 
     #
-    # Schedules an SMS message to a group or single contact. Note that Telerivet only sends
-    # scheduled messages approximately once per minute, so it is not possible to control the exact
+    # Schedules a message to a group or single contact. Note that Telerivet only sends scheduled
+    # messages approximately once every 15 seconds, so it is not possible to control the exact
     # second at which a scheduled message is sent.
     # 
     # Arguments:
@@ -225,7 +231,7 @@ class Project < Entity
     #     
     #     - message_type
     #         * Type of message to send
-    #         * Allowed values: sms, ussd
+    #         * Allowed values: sms, ussd, call
     #         * Default: sms
     #     
     #     - content
@@ -259,13 +265,14 @@ class Project < Entity
     #         * Default: default sender phone ID
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call (when message_type=call)
+    #         * Service that defines the call flow of the voice call (when `message_type` is
+    #             `call`)
     #     
     #     - audio_url
     #         * The URL of an MP3 file to play when the contact answers the call (when
-    #             message_type=call).
+    #             `message_type` is `call`).
     #             
-    #             If audio_url is provided, the text-to-speech voice is not used to say
+    #             If `audio_url` is provided, the text-to-speech voice is not used to say
     #             `content`, although you can optionally use `content` to indicate the script for the
     #             audio.
     #             
@@ -273,7 +280,7 @@ class Project < Entity
     #             recommended because the audio quality will be low when played over a phone line.
     #     
     #     - tts_lang
-    #         * The language of the text-to-speech voice (when message_type=call)
+    #         * The language of the text-to-speech voice (when `message_type` is `call`)
     #         * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
     #             de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
     #         * Default: en-US
@@ -320,7 +327,7 @@ class Project < Entity
     #     
     #     - content
     #         * Content of the incoming message
-    #         * Required unless message_type is call
+    #         * Required unless `message_type` is `call`
     #     
     #     - message_type
     #         * Type of message
@@ -366,14 +373,14 @@ class Project < Entity
     # an existing contact with that phone number (including suffix matches to allow finding
     # contacts with phone numbers in a different format). If a phone number is not provided but a
     # name is provided, Telerivet will search for a contact with that exact name (case
-    # insensitive). This behavior can be modified by setting the lookup_key parameter to look up a
-    # contact by another field, including a custom variable.
+    # insensitive). This behavior can be modified by setting the `lookup_key` parameter to look up
+    # a contact by another field, including a custom variable.
     # 
     # If no existing contact is found, a new contact will be created.
     # 
     # Then that contact will be updated with any parameters provided
-    # (name, phone_number, vars, default\_route\_id, send\_blocked, add\_group\_ids,
-    # remove\_group\_ids).
+    # (`name`, `phone_number`, `vars`, `default_route_id`, `send_blocked`, `add_group_ids`,
+    # `remove_group_ids`).
     # 
     # Arguments:
     #   - options (Hash)
@@ -400,7 +407,7 @@ class Project < Entity
     #         * ID of one or more groups to add this contact as a member (max 20)
     #     
     #     - id
-    #         * ID of an existing contact (only used if lookup_key is 'id')
+    #         * ID of an existing contact (only used if `lookup_key` is 'id')
     #     
     #     - remove_group_ids (array)
     #         * ID of one or more groups to remove this contact as a member (max 20)
@@ -1390,6 +1397,10 @@ class Project < Entity
 
     def url_slug
         get('url_slug')
+    end
+
+    def organization_id
+        get('organization_id')
     end
 
     def get_base_api_path()
