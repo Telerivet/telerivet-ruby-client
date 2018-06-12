@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+require 'zlib'
 require_relative 'telerivet/entity'
 require_relative 'telerivet/apicursor'
 
@@ -8,7 +9,7 @@ module Telerivet
 class API
     attr_reader :num_requests
 
-    @@client_version = '1.3.0'
+    @@client_version = '1.4.0'
 
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -61,7 +62,14 @@ class API
         if has_post_data
             request.set_content_type("application/json")
             if params != nil
-                request.body = JSON.dump(params)
+                data = JSON.dump(params)
+
+                if data.length >= 400
+                    request['Content-Encoding'] = 'gzip'
+                    data = Zlib::Deflate.new(nil, 31).deflate(data, Zlib::FINISH)
+                end
+
+                request.body = data
             end
         end
 
