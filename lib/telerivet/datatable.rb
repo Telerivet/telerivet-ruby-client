@@ -25,6 +25,18 @@ module Telerivet
 #       * Number of rows in the table
 #       * Read-only
 #   
+#   - show_add_row (bool)
+#       * Whether to allow adding or importing rows via the web app
+#       * Updatable via API
+#   
+#   - show_stats (bool)
+#       * Whether to show row statistics in the web app
+#       * Updatable via API
+#   
+#   - show_contact_columns (bool)
+#       * Whether to show 'Contact Name' and 'Phone Number' columns in the web app
+#       * Updatable via API
+#   
 #   - vars (Hash)
 #       * Custom variables stored for this data table
 #       * Updatable via API
@@ -136,14 +148,46 @@ class DataTable < Entity
 
     #
     # Gets a list of all fields (columns) defined for this data table. The return value is an
-    # array of objects with the properties 'name' and 'variable'. (Fields are automatically
-    # created any time a DataRow's 'vars' property is updated.)
+    # array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
+    # 'lookup_key'. (Fields are automatically created any time a DataRow's 'vars' property is
+    # updated.)
     # 
     # Returns:
     #     array
     #
     def get_fields()
         return @api.do_request("GET", get_base_api_path() + "/fields")
+    end
+
+    #
+    # Allows customizing how a field (column) is displayed in the Telerivet web app.
+    # 
+    # Arguments:
+    #   - variable
+    #       * The variable name of the field to create or update.
+    #       * Required
+    #   
+    #   - options (Hash)
+    #     
+    #     - name (string, max 64 characters)
+    #         * Display name for the field
+    #     
+    #     - type (string)
+    #         * Field type
+    #         * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
+    #             date, date_time, groups, route
+    #     
+    #     - order (int)
+    #         * Order in which to display the field
+    #     
+    #     - readonly (bool)
+    #         * Set to true to prevent editing the field in the Telerivet web app
+    #   
+    # Returns:
+    #     object
+    #
+    def set_field_metadata(variable, options = nil)
+        return @api.do_request("POST", get_base_api_path() + "/fields/#{variable}", options)
     end
 
     #
@@ -192,6 +236,30 @@ class DataTable < Entity
 
     def num_rows
         get('num_rows')
+    end
+
+    def show_add_row
+        get('show_add_row')
+    end
+
+    def show_add_row=(value)
+        set('show_add_row', value)
+    end
+
+    def show_stats
+        get('show_stats')
+    end
+
+    def show_stats=(value)
+        set('show_stats', value)
+    end
+
+    def show_contact_columns
+        get('show_contact_columns')
+    end
+
+    def show_contact_columns=(value)
+        set('show_contact_columns', value)
     end
 
     def project_id
