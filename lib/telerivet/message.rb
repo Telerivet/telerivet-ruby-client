@@ -23,7 +23,7 @@ module Telerivet
 #   
 #   - message_type
 #       * Type of the message
-#       * Allowed values: sms, mms, ussd, call
+#       * Allowed values: sms, mms, ussd, call, service
 #       * Read-only
 #   
 #   - source
@@ -38,6 +38,10 @@ module Telerivet
 #   - time_sent (UNIX timestamp)
 #       * The time that the message was reported to have been sent (null for incoming messages
 #           and messages that have not yet been sent)
+#       * Read-only
+#   
+#   - time_updated (UNIX timestamp)
+#       * The time that the message was last updated in Telerivet.
 #       * Read-only
 #   
 #   - from_number (string)
@@ -70,6 +74,11 @@ module Telerivet
 #   - vars (Hash)
 #       * Custom variables stored for this message
 #       * Updatable via API
+#   
+#   - priority (int)
+#       * Priority of this message. Telerivet will attempt to send messages with higher
+#           priority numbers first. Only defined for outgoing messages.
+#       * Read-only
 #   
 #   - error_message
 #       * A description of the error encountered while sending a message. (This field is
@@ -122,6 +131,35 @@ module Telerivet
 #           [getMMSParts](#Message.getMMSParts).
 #       * Read-only
 #   
+#   - track_clicks (boolean)
+#       * If true, URLs in the message content are short URLs that redirect to a destination
+#           URL.
+#       * Read-only
+#   
+#   - short_urls (array)
+#       * For text messages containing short URLs, this is an array of objects with the
+#           properties `short_url`, `link_type`, and `time_clicked` (the first time that URL was
+#           clicked). If `link_type` is "redirect", the object also contains a `destination_url`
+#           property. If `link_type` is "media", the object also contains an `media_index`
+#           property (the index in the media array). If `link_type` is "service", the object also
+#           contains a `service_id` property. This property is undefined for messages that do not
+#           contain short URLs.
+#       * Read-only
+#   
+#   - media (array)
+#       * For text messages containing media files, this is an array of objects with the
+#           properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
+#           Unknown properties are null. This property is undefined for messages that do not
+#           contain media files. Note: For files uploaded via the Telerivet web app, the URL is
+#           temporary and may not be valid for more than 1 day.
+#       * Read-only
+#   
+#   - time_clicked (UNIX timestamp)
+#       * If the message contains any short URLs, this is the first time that a short URL in
+#           the message was clicked.  This property is undefined for messages that do not contain
+#           short URLs.
+#       * Read-only
+#   
 #   - service_id (string, max 34 characters)
 #       * ID of the service that handled the message (for voice calls, the service defines the
 #           call flow)
@@ -141,6 +179,10 @@ module Telerivet
 #   
 #   - broadcast_id (string, max 34 characters)
 #       * ID of the broadcast that this message is part of (if applicable)
+#       * Read-only
+#   
+#   - scheduled_id (string, max 34 characters)
+#       * ID of the scheduled message that created this message is part of (if applicable)
 #       * Read-only
 #   
 #   - user_id (string, max 34 characters)
@@ -290,6 +332,10 @@ class Message < Entity
         get('time_sent')
     end
 
+    def time_updated
+        get('time_updated')
+    end
+
     def from_number
         get('from_number')
     end
@@ -316,6 +362,10 @@ class Message < Entity
 
     def label_ids
         get('label_ids')
+    end
+
+    def priority
+        get('priority')
     end
 
     def error_message
@@ -362,6 +412,22 @@ class Message < Entity
         get('mms_parts')
     end
 
+    def track_clicks
+        get('track_clicks')
+    end
+
+    def short_urls
+        get('short_urls')
+    end
+
+    def media
+        get('media')
+    end
+
+    def time_clicked
+        get('time_clicked')
+    end
+
     def service_id
         get('service_id')
     end
@@ -380,6 +446,10 @@ class Message < Entity
 
     def broadcast_id
         get('broadcast_id')
+    end
+
+    def scheduled_id
+        get('scheduled_id')
     end
 
     def user_id

@@ -37,16 +37,17 @@ module Telerivet
 #
 class Project < Entity
     #
-    # Sends one message (SMS, voice call, or USSD request).
+    # Sends one message (SMS, MMS, voice call, or USSD request).
     # 
     # Arguments:
     #   - options (Hash)
     #       * Required
     #     
     #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms, ussd, call
-    #         * Default: sms
+    #         * Type of message to send. If `text`, will use the default text message type for the
+    #             selected route.
+    #         * Allowed values: sms, mms, ussd, call, text
+    #         * Default: text
     #     
     #     - content
     #         * Content of the message to send (if `message_type` is `call`, the text will be
@@ -64,6 +65,45 @@ class Project < Entity
     #     - route_id
     #         * ID of the phone or route to send the message from
     #         * Default: default sender route ID for your project
+    #     
+    #     - status_url
+    #         * Webhook callback URL to be notified when message status changes
+    #     
+    #     - status_secret
+    #         * POST parameter 'secret' passed to status_url
+    #     
+    #     - is_template (bool)
+    #         * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+    #             available variables)](#variables)
+    #         * Default: false
+    #     
+    #     - track_clicks (boolean)
+    #         * If true, URLs in the message content will automatically be replaced with unique
+    #             short URLs.
+    #         * Default: false
+    #     
+    #     - media_urls (array)
+    #         * URLs of media files to attach to the text message. If `message_type` is `sms`,
+    #             short links to each media URL will be appended to the end of the content (separated
+    #             by a new line).
+    #     
+    #     - label_ids (array)
+    #         * List of IDs of labels to add to this message
+    #     
+    #     - vars (Hash)
+    #         * Custom variables to store with the message
+    #     
+    #     - priority (int)
+    #         * Priority of the message. Telerivet will attempt to send messages with higher
+    #             priority numbers first (for example, so you can prioritize an auto-reply ahead of a
+    #             bulk message to a large group).
+    #         * Allowed values: 1, 2
+    #         * Default: 1
+    #     
+    #     - simulated (bool)
+    #         * Set to true to test the Telerivet API without actually sending a message from the
+    #             route
+    #         * Default: false
     #     
     #     - service_id
     #         * Service that defines the call flow of the voice call (when `message_type` is
@@ -90,29 +130,6 @@ class Project < Entity
     #         * The name of the text-to-speech voice (when message_type=call)
     #         * Allowed values: female, male
     #         * Default: female
-    #     
-    #     - status_url
-    #         * Webhook callback URL to be notified when message status changes
-    #     
-    #     - status_secret
-    #         * POST parameter 'secret' passed to status_url
-    #     
-    #     - is_template (bool)
-    #         * Set to true to evaluate variables like [[contact.name]] in message content. [(See
-    #             available variables)](#variables)
-    #         * Default: false
-    #     
-    #     - label_ids (array)
-    #         * List of IDs of labels to add to this message
-    #     
-    #     - vars (Hash)
-    #         * Custom variables to store with the message
-    #     
-    #     - priority (int)
-    #         * Priority of the message (currently only observed for Android phones). Telerivet
-    #             will attempt to send messages with higher priority numbers first (for example, so
-    #             you can prioritize an auto-reply ahead of a bulk message to a large group).
-    #         * Default: 1
     #   
     # Returns:
     #     Telerivet::Message
@@ -124,16 +141,21 @@ class Project < Entity
 
     #
     # Sends a text message (optionally with mail-merge templates) or voice call to a group or a
-    # list of up to 500 phone numbers
+    # list of up to 500 phone numbers.
+    # 
+    # With `message_type`=`service`, invokes an automated service (such as
+    # a poll) for a group or list of phone numbers. Any service that can be triggered for a
+    # contact can be invoked via this method, whether or not the service actually sends a message.
     # 
     # Arguments:
     #   - options (Hash)
     #       * Required
     #     
     #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms, call
-    #         * Default: sms
+    #         * Type of message to send. If `text`, will use the default text message type for the
+    #             selected route.
+    #         * Allowed values: sms, mms, call, service, text
+    #         * Default: text
     #     
     #     - content
     #         * Content of the message to send
@@ -155,9 +177,42 @@ class Project < Entity
     #         * Title of the broadcast. If a title is not provided, a title will automatically be
     #             generated from the recipient group name or phone numbers.
     #     
+    #     - status_url
+    #         * Webhook callback URL to be notified when message status changes
+    #     
+    #     - status_secret
+    #         * POST parameter 'secret' passed to status_url
+    #     
+    #     - label_ids (array)
+    #         * Array of IDs of labels to add to all messages sent (maximum 5). Does not apply
+    #             when `message_type`=`service`, since the labels are determined by the service
+    #             itself.
+    #     
+    #     - exclude_contact_id
+    #         * Optionally excludes one contact from receiving the message (only when group_id is
+    #             set)
+    #     
+    #     - is_template (bool)
+    #         * Set to true to evaluate variables like [[contact.name]] in message content [(See
+    #             available variables)](#variables)
+    #         * Default: false
+    #     
+    #     - track_clicks (boolean)
+    #         * If true, URLs in the message content will automatically be replaced with unique
+    #             short URLs.
+    #         * Default: false
+    #     
+    #     - media_urls (array)
+    #         * URLs of media files to attach to the text message. If `message_type` is `sms`,
+    #             short links to each URL will be appended to the end of the content (separated by a
+    #             new line).
+    #     
+    #     - vars (Hash)
+    #         * Custom variables to set for each message
+    #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call (when `message_type` is
-    #             `call`)
+    #         * Service to invoke for each recipient (when `message_type` is `call` or `service`)
+    #         * Required if message_type is service
     #     
     #     - audio_url
     #         * The URL of an MP3 file to play when the contact answers the call (when
@@ -180,27 +235,6 @@ class Project < Entity
     #         * The name of the text-to-speech voice (when message_type=call)
     #         * Allowed values: female, male
     #         * Default: female
-    #     
-    #     - status_url
-    #         * Webhook callback URL to be notified when message status changes
-    #     
-    #     - status_secret
-    #         * POST parameter 'secret' passed to status_url
-    #     
-    #     - label_ids (array)
-    #         * Array of IDs of labels to add to all messages sent (maximum 5)
-    #     
-    #     - exclude_contact_id
-    #         * Optionally excludes one contact from receiving the message (only when group_id is
-    #             set)
-    #     
-    #     - is_template (bool)
-    #         * Set to true to evaluate variables like [[contact.name]] in message content [(See
-    #             available variables)](#variables)
-    #         * Default: false
-    #     
-    #     - vars (Hash)
-    #         * Custom variables to set for each message
     #   
     # Returns:
     #     Telerivet::Broadcast
@@ -219,13 +253,17 @@ class Project < Entity
     #       * Required
     #     
     #     - messages (array)
-    #         * Array of up to 100 objects with `content` and `to_number` properties
+    #         * Array of up to 100 objects with `content` and `to_number` properties. Each object
+    #             may also contain the optional properties `status_url`, `status_secret`, `vars`,
+    #             and/or `priority`, which override the parameters of the same name defined below, to
+    #             allow passing different values for each message.
     #         * Required
     #     
     #     - message_type
-    #         * Type of message to send
-    #         * Allowed values: sms
-    #         * Default: sms
+    #         * Type of message to send. If `text`, will use the default text message type for the
+    #             selected route.
+    #         * Allowed values: sms, mms, chat, text
+    #         * Default: text
     #     
     #     - route_id
     #         * ID of the phone or route to send the messages from
@@ -255,6 +293,26 @@ class Project < Entity
     #     - is_template (bool)
     #         * Set to true to evaluate variables like [[contact.name]] in message content [(See
     #             available variables)](#variables)
+    #         * Default: false
+    #     
+    #     - media_urls (array)
+    #         * URLs of media files to attach to the text message. If `message_type` is `sms`,
+    #             short links to each media URL will be appended to the end of the content (separated
+    #             by a new line).
+    #     
+    #     - vars (Hash)
+    #         * Custom variables to store with the message
+    #     
+    #     - priority (int)
+    #         * Priority of the message. Telerivet will attempt to send messages with higher
+    #             priority numbers first (for example, so you can prioritize an auto-reply ahead of a
+    #             bulk message to a large group).
+    #         * Allowed values: 1, 2
+    #         * Default: 1
+    #     
+    #     - simulated (bool)
+    #         * Set to true to test the Telerivet API without actually sending a message from the
+    #             route
     #         * Default: false
     #   
     # Returns:
@@ -314,13 +372,18 @@ class Project < Entity
     # messages approximately once every 15 seconds, so it is not possible to control the exact
     # second at which a scheduled message is sent.
     # 
+    # With `message_type`=`service`, schedules an automated service (such
+    # as a poll) to be invoked for a group or list of phone numbers. Any service that can be
+    # triggered for a contact can be scheduled via this method, whether or not the service
+    # actually sends a message.
+    # 
     # Arguments:
     #   - options (Hash)
     #       * Required
     #     
     #     - message_type
     #         * Type of message to send
-    #         * Allowed values: sms, ussd, call
+    #         * Allowed values: sms, ussd, call, service
     #         * Default: sms
     #     
     #     - content
@@ -354,8 +417,8 @@ class Project < Entity
     #         * Default: default sender route ID
     #     
     #     - service_id
-    #         * Service that defines the call flow of the voice call (when `message_type` is
-    #             `call`)
+    #         * Service to invoke for each recipient (when `message_type` is `call` or `service`)
+    #         * Required if message_type is service
     #     
     #     - audio_url
     #         * The URL of an MP3 file to play when the contact answers the call (when
@@ -379,12 +442,24 @@ class Project < Entity
     #         * Allowed values: female, male
     #         * Default: female
     #     
+    #     - track_clicks (boolean)
+    #         * If true, URLs in the message content will automatically be replaced with unique
+    #             short URLs.
+    #         * Default: false
+    #     
     #     - is_template (bool)
     #         * Set to true to evaluate variables like [[contact.name]] in message content
     #         * Default: false
     #     
+    #     - media_urls (array)
+    #         * URLs of media files to attach to the text message. If `message_type` is `sms`,
+    #             short links to each media URL will be appended to the end of the content (separated
+    #             by a new line).
+    #     
     #     - label_ids (array)
-    #         * Array of IDs of labels to add to the sent messages (maximum 5)
+    #         * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
+    #             when `message_type`=`service`, since the labels are determined by the service
+    #             itself.
     #     
     #     - timezone_id
     #         * TZ database timezone ID; see
@@ -397,6 +472,10 @@ class Project < Entity
     #     
     #     - end_time_offset (int)
     #         * Number of seconds from now until the recurring message will stop
+    #     
+    #     - vars (Hash)
+    #         * Custom variables to set for this scheduled message, which will be copied to each
+    #             message sent from this scheduled message
     #   
     # Returns:
     #     Telerivet::ScheduledMessage
@@ -631,7 +710,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -711,7 +790,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -770,7 +849,7 @@ class Project < Entity
     #     
     #     - message_type
     #         * Filter messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - source
     #         * Filter messages by source
@@ -802,6 +881,9 @@ class Project < Entity
     #     - broadcast_id
     #         * ID of the broadcast containing the message
     #     
+    #     - scheduled_id
+    #         * ID of the scheduled message that created this message
+    #     
     #     - sort
     #         * Sort the results based on a field
     #         * Allowed values: default
@@ -813,7 +895,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -889,7 +971,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -961,7 +1043,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -1046,7 +1128,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -1131,7 +1213,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -1202,7 +1284,7 @@ class Project < Entity
     #     
     #     - message_type
     #         * Filter scheduled messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - time_created (UNIX timestamp)
     #         * Filter scheduled messages by time_created
@@ -1224,7 +1306,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -1300,7 +1382,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -1369,7 +1451,7 @@ class Project < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)

@@ -19,6 +19,10 @@ module Telerivet
 #       * Time the contact was added in Telerivet
 #       * Read-only
 #   
+#   - time_updated (UNIX timestamp)
+#       * Time the contact was last updated in Telerivet
+#       * Read-only
+#   
 #   - send_blocked (bool)
 #       * True if Telerivet is blocked from sending messages to this contact
 #       * Updatable via API
@@ -125,7 +129,7 @@ class Contact < Entity
     #     
     #     - message_type
     #         * Filter messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - source
     #         * Filter messages by source
@@ -157,6 +161,9 @@ class Contact < Entity
     #     - broadcast_id
     #         * ID of the broadcast containing the message
     #     
+    #     - scheduled_id
+    #         * ID of the scheduled message that created this message
+    #     
     #     - sort
     #         * Sort the results based on a field
     #         * Allowed values: default
@@ -168,7 +175,7 @@ class Contact < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -208,7 +215,7 @@ class Contact < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -232,7 +239,7 @@ class Contact < Entity
     #     
     #     - message_type
     #         * Filter scheduled messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - time_created (UNIX timestamp)
     #         * Filter scheduled messages by time_created
@@ -254,7 +261,7 @@ class Contact < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -290,7 +297,7 @@ class Contact < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -333,7 +340,7 @@ class Contact < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -384,6 +391,10 @@ class Contact < Entity
 
     def time_created
         get('time_created')
+    end
+
+    def time_updated
+        get('time_updated')
     end
 
     def send_blocked

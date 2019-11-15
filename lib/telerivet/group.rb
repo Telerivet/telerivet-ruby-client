@@ -103,7 +103,7 @@ class Group < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -126,7 +126,7 @@ class Group < Entity
     #     
     #     - message_type
     #         * Filter scheduled messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - time_created (UNIX timestamp)
     #         * Filter scheduled messages by time_created
@@ -148,7 +148,7 @@ class Group < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)

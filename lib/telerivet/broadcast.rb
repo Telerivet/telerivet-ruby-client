@@ -75,7 +75,7 @@ module Telerivet
 #   
 #   - message_type
 #       * Type of message sent from this broadcast
-#       * Allowed values: sms, mms, ussd, call
+#       * Allowed values: sms, mms, ussd, call, service
 #       * Read-only
 #   
 #   - content (string)
@@ -117,8 +117,27 @@ module Telerivet
 #           sent to or received by a real phone)
 #       * Read-only
 #   
+#   - track_clicks (boolean)
+#       * If true, URLs in the message content will automatically be replaced with unique
+#           short URLs.
+#       * Read-only
+#   
+#   - clicked_count (int)
+#       * The number of messages in this broadcast containing short links that were clicked.
+#           At most one click per message is counted. If track_clicks is false, this property will
+#           be null.
+#       * Read-only
+#   
 #   - label_ids (array)
 #       * List of IDs of labels applied to all messages in the broadcast
+#       * Read-only
+#   
+#   - media (array)
+#       * For text messages containing media files, this is an array of objects with the
+#           properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
+#           Unknown properties are null. This property is undefined for messages that do not
+#           contain media files. Note: For files uploaded via the Telerivet web app, the URL is
+#           temporary and may not be valid for more than 1 day.
 #       * Read-only
 #   
 #   - vars (Hash)
@@ -145,6 +164,11 @@ module Telerivet
 #   
 #   - route_id (string, max 34 characters)
 #       * ID of the phone or route used to send the broadcast (if applicable)
+#       * Read-only
+#   
+#   - service_id (string, max 34 characters)
+#       * The service associated with this broadcast (for voice calls, the service defines the
+#           call flow)
 #       * Read-only
 #   
 #   - user_id (string, max 34 characters)
@@ -242,8 +266,20 @@ class Broadcast < Entity
         get('simulated')
     end
 
+    def track_clicks
+        get('track_clicks')
+    end
+
+    def clicked_count
+        get('clicked_count')
+    end
+
     def label_ids
         get('label_ids')
+    end
+
+    def media
+        get('media')
     end
 
     def price
@@ -264,6 +300,10 @@ class Broadcast < Entity
 
     def route_id
         get('route_id')
+    end
+
+    def service_id
+        get('service_id')
     end
 
     def user_id

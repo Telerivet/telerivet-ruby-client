@@ -9,7 +9,7 @@ module Telerivet
 class API
     attr_reader :num_requests
 
-    @@client_version = '1.4.2'
+    @@client_version = '1.4.5'
 
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -153,7 +153,7 @@ class API
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
@@ -222,7 +222,7 @@ class API
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)

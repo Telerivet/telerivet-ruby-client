@@ -111,7 +111,7 @@ class Phone < Entity
     #     
     #     - message_type
     #         * Filter messages by message_type
-    #         * Allowed values: sms, mms, ussd, call
+    #         * Allowed values: sms, mms, ussd, call, service
     #     
     #     - source
     #         * Filter messages by source
@@ -143,6 +143,9 @@ class Phone < Entity
     #     - broadcast_id
     #         * ID of the broadcast containing the message
     #     
+    #     - scheduled_id
+    #         * ID of the scheduled message that created this message
+    #     
     #     - sort
     #         * Sort the results based on a field
     #         * Allowed values: default
@@ -154,7 +157,7 @@ class Phone < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)

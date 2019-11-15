@@ -82,7 +82,9 @@ class Service < Entity
     # 
     # For example, to send a poll to a particular contact (or resend the
     # current question), you can invoke the poll service with context=contact, and `contact_id` as
-    # the ID of the contact to send the poll to.
+    # the ID of the contact to send the poll to. (To trigger a service to multiple contacts, use
+    # [project.sendBroadcast](#Project.sendBroadcast). To schedule a service in the future, use
+    # [project.scheduleMessage](#Project.scheduleMessage).)
     # 
     # Or, to manually apply a service for an incoming message, you can
     # invoke the service with `context`=`message`, `event`=`incoming_message`, and `message_id` as
@@ -223,7 +225,7 @@ class Service < Entity
     #         * Default: asc
     #     
     #     - page_size (int)
-    #         * Number of results returned per page (max 200)
+    #         * Number of results returned per page (max 500)
     #         * Default: 50
     #     
     #     - offset (int)
