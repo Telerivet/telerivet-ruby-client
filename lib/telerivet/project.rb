@@ -853,7 +853,8 @@ class Project < Entity
     #     
     #     - source
     #         * Filter messages by source
-    #         * Allowed values: phone, provider, web, api, service, webhook, scheduled
+    #         * Allowed values: phone, provider, web, api, service, webhook, scheduled,
+    #             integration
     #     
     #     - starred (bool)
     #         * Filter messages by starred/unstarred
@@ -1508,6 +1509,85 @@ class Project < Entity
     #
     def get_users()
         return @api.do_request("GET", get_base_api_path() + "/users")
+    end
+
+    #
+    # Returns information about each airtime transaction.
+    # 
+    # Arguments:
+    #   - options (Hash)
+    #     
+    #     - time_created[min] (UNIX timestamp)
+    #         * Filter transactions created on or after a particular time
+    #     
+    #     - time_created[max] (UNIX timestamp)
+    #         * Filter transactions created before a particular time
+    #     
+    #     - contact_id
+    #         * Filter transactions sent to a particular contact
+    #     
+    #     - to_number
+    #         * Filter transactions sent to a particular phone number
+    #     
+    #     - service_id
+    #         * Filter transactions sent by a particular service
+    #     
+    #     - status
+    #         * Filter transactions by status
+    #         * Allowed values: pending, queued, processing, successful, failed, cancelled,
+    #             pending_payment, pending_approval
+    #     
+    #     - sort_dir
+    #         * Sort the results in ascending or descending order
+    #         * Allowed values: asc, desc
+    #         * Default: asc
+    #     
+    #     - page_size (int)
+    #         * Number of results returned per page (max 500)
+    #         * Default: 50
+    #     
+    #     - offset (int)
+    #         * Number of items to skip from beginning of result set
+    #         * Default: 0
+    #   
+    # Returns:
+    #     Telerivet::APICursor (of Telerivet::AirtimeTransaction)
+    #
+    def query_airtime_transactions(options = nil)
+        require_relative 'airtimetransaction'
+        @api.cursor(AirtimeTransaction, get_base_api_path() + "/airtime_transactions", options)
+    end
+
+    #
+    # Gets an airtime transaction by ID
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the airtime transaction
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::AirtimeTransaction
+    #
+    def get_airtime_transaction_by_id(id)
+        require_relative 'airtimetransaction'
+        AirtimeTransaction.new(@api, @api.do_request("GET", get_base_api_path() + "/airtime_transactions/#{id}"))
+    end
+
+    #
+    # Initializes an airtime transaction by ID without making an API request.
+    # 
+    # Arguments:
+    #   - id
+    #       * ID of the airtime transaction
+    #       * Required
+    #   
+    # Returns:
+    #     Telerivet::AirtimeTransaction
+    #
+    def init_airtime_transaction_by_id(id)
+        require_relative 'airtimetransaction'
+        return AirtimeTransaction.new(@api, {'project_id' => self.id, 'id' => id}, false)
     end
 
     #
