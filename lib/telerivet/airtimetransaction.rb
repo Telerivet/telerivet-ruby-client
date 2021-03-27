@@ -65,6 +65,10 @@ module Telerivet
 #       * ID of the project that the airtime transaction belongs to
 #       * Read-only
 #   
+#   - external_id
+#       * The ID of this transaction from an external airtime gateway provider, if available.
+#       * Read-only
+#   
 #   - vars (Hash)
 #       * Custom variables stored for this transaction
 #       * Updatable via API
@@ -120,6 +124,10 @@ class AirtimeTransaction < Entity
 
     def project_id
         get('project_id')
+    end
+
+    def external_id
+        get('external_id')
     end
 
     def get_base_api_path()
