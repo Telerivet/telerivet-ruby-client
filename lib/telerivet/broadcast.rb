@@ -144,6 +144,13 @@ module Telerivet
 #       * Custom variables stored for this broadcast
 #       * Read-only
 #   
+#   - route_params (Hash)
+#       * Route-specific parameters for the messages in the broadcast. The parameters object
+#           may have keys matching the `phone_type` field of a phone (basic route) that may be
+#           used to send messages in this broadcast. The corresponding value is an object with
+#           route-specific parameters to use when sending messages with that type of route.
+#       * Read-only
+#   
 #   - price (number)
 #       * The total price of all messages in this broadcast, if known.
 #       * Read-only
@@ -280,6 +287,10 @@ class Broadcast < Entity
 
     def media
         get('media')
+    end
+
+    def route_params
+        get('route_params')
     end
 
     def price

@@ -18,7 +18,7 @@ module Telerivet
 #   - status
 #       * Current status of the message
 #       * Allowed values: ignored, processing, received, sent, queued, failed, failed_queued,
-#           cancelled, delivered, not_delivered
+#           cancelled, delivered, not_delivered, read
 #       * Read-only
 #   
 #   - message_type
@@ -69,6 +69,13 @@ module Telerivet
 #   
 #   - label_ids (array)
 #       * List of IDs of labels applied to this message
+#       * Read-only
+#   
+#   - route_params (Hash)
+#       * Route-specific parameters for the message. The parameters object may have keys
+#           matching the `phone_type` field of a phone (basic route) that may be used to send the
+#           message. The corresponding value is an object with route-specific parameters to use
+#           when the message is sent by that type of route.
 #       * Read-only
 #   
 #   - vars (Hash)
@@ -122,15 +129,6 @@ module Telerivet
 #       * Allowed values: female, male
 #       * Read-only
 #   
-#   - mms_parts (array)
-#       * A list of parts in the MMS message, the same as returned by the
-#           [getMMSParts](#Message.getMMSParts) method.
-#           
-#           Note: This property is only present when retrieving an individual
-#           MMS message by ID, not when querying a list of messages. In other cases, use
-#           [getMMSParts](#Message.getMMSParts).
-#       * Read-only
-#   
 #   - track_clicks (boolean)
 #       * If true, URLs in the message content are short URLs that redirect to a destination
 #           URL.
@@ -138,12 +136,12 @@ module Telerivet
 #   
 #   - short_urls (array)
 #       * For text messages containing short URLs, this is an array of objects with the
-#           properties `short_url`, `link_type`, and `time_clicked` (the first time that URL was
-#           clicked). If `link_type` is "redirect", the object also contains a `destination_url`
-#           property. If `link_type` is "media", the object also contains an `media_index`
-#           property (the index in the media array). If `link_type` is "service", the object also
-#           contains a `service_id` property. This property is undefined for messages that do not
-#           contain short URLs.
+#           properties `short_url`, `link_type`, `time_clicked` (the first time that URL was
+#           clicked), and `expiration_time`. If `link_type` is "redirect", the object also
+#           contains a `destination_url` property. If `link_type` is "media", the object also
+#           contains an `media_index` property (the index in the media array). If `link_type` is
+#           "service", the object also contains a `service_id` property. This property is
+#           undefined for messages that do not contain short URLs.
 #       * Read-only
 #   
 #   - media (array)
@@ -152,6 +150,27 @@ module Telerivet
 #           Unknown properties are null. This property is undefined for messages that do not
 #           contain media files. Note: For files uploaded via the Telerivet web app, the URL is
 #           temporary and may not be valid for more than 1 day.
+#       * Read-only
+#   
+#   - mms_parts (array)
+#       * A list of parts in the MMS message (only for incoming MMS messages received via
+#           Telerivet Gateway Android app).
+#           
+#           Each MMS part in the list is an object with the following
+#           properties:
+#           
+#           - cid: MMS content-id
+#           - type: MIME type
+#           - filename: original filename
+#           - size (int): number of bytes
+#           - url: URL where the content for this part is stored (secret but
+#           publicly accessible, so you could link/embed it in a web page without having to
+#           re-host it yourself)
+#           
+#           In general, the `media` property of the message is recommended for
+#           retrieving information about MMS media files, instead of `mms_parts`.
+#           The `mms_parts` property is also only present when retrieving an
+#           individual MMS message by ID, not when querying a list of messages.
 #       * Read-only
 #   
 #   - time_clicked (UNIX timestamp)
@@ -237,18 +256,15 @@ class Message < Entity
     end
 
     #
-    # Retrieves a list of MMS parts for this message (empty for non-MMS messages).
+    # (Deprecated) Retrieves a list of MMS parts for this message (only for incoming MMS messages
+    # received via Telerivet Gateway Android app).
+    # Note: This only works for MMS messages received via the Telerivet
+    # Gateway Android app.
+    # In general, the `media` property of the message is recommended for
+    # retrieving information about MMS media files.
     # 
-    # Each MMS part in the list is an object with the following
-    # properties:
-    # 
-    # - cid: MMS content-id
-    # - type: MIME type
-    # - filename: original filename
-    # - size (int): number of bytes
-    # - url: URL where the content for this part is stored (secret but
-    # publicly accessible, so you could link/embed it in a web page without having to re-host it
-    # yourself)
+    # The return value has the same format as the `mms_parts` property of
+    # the Message object.
     # 
     # Returns:
     #     array
@@ -364,6 +380,10 @@ class Message < Entity
         get('label_ids')
     end
 
+    def route_params
+        get('route_params')
+    end
+
     def priority
         get('priority')
     end
@@ -408,10 +428,6 @@ class Message < Entity
         get('tts_voice')
     end
 
-    def mms_parts
-        get('mms_parts')
-    end
-
     def track_clicks
         get('track_clicks')
     end
@@ -422,6 +438,10 @@ class Message < Entity
 
     def media
         get('media')
+    end
+
+    def mms_parts
+        get('mms_parts')
     end
 
     def time_clicked
