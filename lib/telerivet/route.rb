@@ -32,7 +32,7 @@ module Telerivet
 #
 class Route < Entity
     #
-    # Saves any fields or custom variables that have changed for this route.
+    # Saves any fields or custom variables that have changed for this custom route.
     #
     def save()
         super

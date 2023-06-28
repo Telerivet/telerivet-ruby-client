@@ -2,7 +2,8 @@
 module Telerivet
 
 #
-# Represents a phone or gateway that you use to send/receive messages via Telerivet.
+# Represents a basic route (i.e. a phone or gateway) that you use to send/receive messages via
+# Telerivet.
 # 
 # Basic Routes were formerly referred to as "Phones" within Telerivet. API
 # methods, parameters, and properties related to Basic Routes continue to use the term "Phone"
@@ -73,15 +74,16 @@ module Telerivet
 #   
 #   - android_sdk (int)
 #       * Android SDK level, indicating the approximate version of the Android OS installed on
-#           this phone; see
-#           <http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels>
+#           this phone; see [list of Android SDK
+#           levels](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels)
 #           (only present for Android phones)
 #       * Read-only
 #   
 #   - mccmnc
 #       * Code indicating the Android phone's current country (MCC) and mobile network
-#           operator (MNC); see <http://en.wikipedia.org/wiki/Mobile_country_code> (only present
-#           for Android phones). Note this is a string containing numeric digits, not an integer.
+#           operator (MNC); see [Mobile country code Wikipedia
+#           article](https://en.wikipedia.org/wiki/Mobile_country_code) (only present for Android
+#           phones). Note this is a string containing numeric digits, not an integer.
 #       * Read-only
 #   
 #   - manufacturer
@@ -100,7 +102,7 @@ module Telerivet
 #
 class Phone < Entity
     #
-    # Queries messages sent or received by this phone.
+    # Queries messages sent or received by this basic route.
     # 
     # Arguments:
     #   - options (Hash)
@@ -111,7 +113,7 @@ class Phone < Entity
     #     
     #     - message_type
     #         * Filter messages by message_type
-    #         * Allowed values: sms, mms, ussd, call, service
+    #         * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
     #     
     #     - source
     #         * Filter messages by source
@@ -182,7 +184,7 @@ class Phone < Entity
     end
 
     #
-    # Saves any fields or custom variables that have changed for this phone.
+    # Saves any fields or custom variables that have changed for this basic route.
     #
     def save()
         super

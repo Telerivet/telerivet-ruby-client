@@ -23,7 +23,7 @@ module Telerivet
 #   
 #   - message_type
 #       * Type of the message
-#       * Allowed values: sms, mms, ussd, call, service
+#       * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
 #       * Read-only
 #   
 #   - source
@@ -93,8 +93,12 @@ module Telerivet
 #       * Updatable via API
 #   
 #   - external_id
-#       * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo),
-#           if available.
+#       * The ID of this message from an external SMS gateway provider (e.g. Twilio or
+#           Vonage), if available.
+#       * Read-only
+#   
+#   - num_parts (number)
+#       * The number of SMS parts associated with the message, if applicable and if known.
 #       * Read-only
 #   
 #   - price (number)
@@ -142,6 +146,16 @@ module Telerivet
 #           contains an `media_index` property (the index in the media array). If `link_type` is
 #           "service", the object also contains a `service_id` property. This property is
 #           undefined for messages that do not contain short URLs.
+#       * Read-only
+#   
+#   - network_code (string)
+#       * A string identifying the network that sent or received the message, if known. For
+#           mobile networks, this string contains the 3-digit mobile country code (MCC) followed
+#           by the 2- or 3-digit mobile network code (MNC), which results in a 5- or 6-digit
+#           number. For lists of mobile network operators and their corresponding MCC/MNC values,
+#           see [Mobile country code Wikipedia
+#           article](https://en.wikipedia.org/wiki/Mobile_country_code). The network_code property
+#           may be non-numeric for messages not sent via mobile networks.
 #       * Read-only
 #   
 #   - media (array)
@@ -400,6 +414,10 @@ class Message < Entity
         get('external_id')
     end
 
+    def num_parts
+        get('num_parts')
+    end
+
     def price
         get('price')
     end
@@ -434,6 +452,10 @@ class Message < Entity
 
     def short_urls
         get('short_urls')
+    end
+
+    def network_code
+        get('network_code')
     end
 
     def media

@@ -13,16 +13,16 @@ class APICursor
 
     def initialize(api, item_cls, path, params = nil)
         params ||= {}
-    
+
         if params.has_key?('count')
             raise Exception, "Cannot construct APICursor with 'count' parameter. Call the count() method instead."
         end
-    
+
         @api = api
         @item_cls = item_cls
         @path = path
         @params = params
-        
+
         @count = -1
         @pos = nil
         @data = nil
@@ -31,15 +31,15 @@ class APICursor
         @limit = nil
         @offset = 0
     end
-    
+
     def each()
         loop do
             item = self.next()
-            return if item == nil               
+            return if item == nil
             yield item
         end
     end
-    
+
     #
     # Limits the maximum number of entities fetched by this query.
     # 
@@ -60,7 +60,7 @@ class APICursor
         @limit = _limit
         self
     end
-    
+
     #
     # Returns the total count of entities matching the current query, without actually fetching
     # the entities themselves.
@@ -76,13 +76,13 @@ class APICursor
         if @count == -1
             params = @params.clone
             params['count'] = 1
-            
+
             res = @api.do_request("GET", @path, params)
             @count = res['count'].to_i
         end
         @count
     end
-    
+
     def all()
         to_a
     end
@@ -97,37 +97,41 @@ class APICursor
         return false if @limit != nil && @offset >= @limit
 
         load_next_page() if @data == nil
-            
+
         return true if @pos < @data.length
-        
+
         return false if !@truncated
-            
+
         load_next_page()
-        
+
         @pos < @data.length
     end
-    
+
     #
     # Returns the next entity in the result set.
     # 
     # Returns:
     #     Telerivet::Entity
     #
-    def next()             
+    def next()
         if @limit != nil && @offset >= @limit
             return nil
         end
-        
+
         if @data == nil || (@pos >= @data.length && @truncated)
             load_next_page()
         end
-        
+
         if @pos < @data.length
             item_data = @data[@pos]
             @pos += 1
             @offset += 1
             cls = @item_cls
-            return cls.new(@api, item_data, true)
+            if cls
+                return cls.new(@api, item_data, true)
+            else
+                return item_data
+            end
         else
             return nil
         end
@@ -135,17 +139,17 @@ class APICursor
 
     def load_next_page()
         request_params = @params.clone
-                
+
         if @next_marker != nil
             request_params['marker'] = @next_marker
         end
-        
+
         if @limit != nil && !request_params.has_key?("page_size")
             request_params['page_size'] = [@limit, 200].min
         end
-        
+
         response = @api.do_request("GET", @path, request_params)
-        
+
         @data = response['data']
         @truncated = response['truncated']
         @next_marker = response['next_marker']

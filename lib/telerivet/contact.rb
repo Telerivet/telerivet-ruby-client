@@ -63,8 +63,8 @@ module Telerivet
 #       * Read-only
 #   
 #   - default_route_id
-#       * ID of the phone or route that Telerivet will use by default to send messages to this
-#           contact (null if using project default route)
+#       * ID of the basic route (phone) or custom route that Telerivet will use by default to
+#           send messages to this contact (null if using project default route)
 #       * Updatable via API
 #   
 #   - group_ids (array of strings)
@@ -134,7 +134,7 @@ class Contact < Entity
     #     
     #     - message_type
     #         * Filter messages by message_type
-    #         * Allowed values: sms, mms, ussd, call, service
+    #         * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
     #     
     #     - source
     #         * Filter messages by source
@@ -253,7 +253,7 @@ class Contact < Entity
     #     
     #     - message_type
     #         * Filter scheduled messages by message_type
-    #         * Allowed values: sms, mms, ussd, call, service
+    #         * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
     #     
     #     - time_created (UNIX timestamp)
     #         * Filter scheduled messages by time_created
@@ -262,6 +262,9 @@ class Contact < Entity
     #     - next_time (UNIX timestamp)
     #         * Filter scheduled messages by next_time
     #         * Allowed modifiers: next_time[min], next_time[max], next_time[exists]
+    #     
+    #     - relative_scheduled_id
+    #         * Filter scheduled messages created for a relative scheduled message
     #     
     #     - sort
     #         * Sort the results based on a field
