@@ -9,7 +9,7 @@ module Telerivet
 class API
     attr_reader :num_requests
 
-    @@client_version = '1.7.0'
+    @@client_version = '1.8.0'
 
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -88,11 +88,11 @@ class API
             error_code = error['code']
 
             if error_code == 'invalid_param'
-                raise InvalidParameterException, error['message'] #, error['code'], error['param'])
+                raise InvalidParameterException.new error['message'], error['code'], error['param']
             elsif error_code == 'not_found'
-                raise NotFoundException, error['message'] #, error['code']);
+                raise NotFoundException.new error['message'], error['code']
             else
-                raise APIException, error['message'] #, error['code'])
+                raise APIException.new error['message'], error['code']
             end
         else
             return res
@@ -282,12 +282,24 @@ class API
 end
 
 class APIException < Exception
+    attr_reader :code
+
+    def initialize(msg, code)
+        @code = code
+        super(msg)
+    end
 end
 
 class NotFoundException < APIException
 end
 
 class InvalidParameterException < APIException
+    attr_reader :param
+
+    def initialize(msg, code, param)
+        @param = param
+        super(msg, code)
+    end
 end
 
 end

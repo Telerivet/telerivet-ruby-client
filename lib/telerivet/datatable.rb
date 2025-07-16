@@ -31,7 +31,8 @@ module Telerivet
 #       * Updatable via API
 #   
 #   - show_stats (bool)
-#       * Whether to show row statistics in the web app
+#       * Whether to show summary charts (pie charts, bar charts, tables of top values) for
+#           this data table in the web app
 #       * Updatable via API
 #   
 #   - show_contact_columns (bool)
@@ -39,7 +40,12 @@ module Telerivet
 #       * Updatable via API
 #   
 #   - vars (Hash)
-#       * Custom variables stored for this data table
+#       * Custom variables stored for this data table. Variable names may be up to 32
+#           characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+#           Values may be strings, numbers, or boolean (true/false).
+#           String values may be up to 4096 bytes in length when encoded as UTF-8.
+#           Up to 100 variables are supported per object.
+#           Setting a variable to null will delete the variable.
 #       * Updatable via API
 #   
 #   - project_id
@@ -105,7 +111,12 @@ class DataTable < Entity
     #         * Phone number that this row is associated with (if applicable)
     #     
     #     - vars
-    #         * Custom variables and values to set for this data row
+    #         * Custom variables and values to set for this data row. Variable names may be up to
+    #             32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+    #             Values may be strings, numbers, or boolean (true/false).
+    #             String values may be up to 4096 bytes in length when encoded as UTF-8.
+    #             Up to 100 variables are supported per object.
+    #             Setting a variable to null will delete the variable.
     #   
     # Returns:
     #     Telerivet::DataRow
@@ -163,6 +174,9 @@ class DataTable < Entity
     #
     # Allows customizing how a field (column) is displayed in the Telerivet web app.
     # 
+    # The variable path parameter can contain the characters a-z, A-Z,
+    # 0-9, and _, and may be up to 32 characters in length.
+    # 
     # Arguments:
     #   - variable
     #       * The variable name of the field to create or update.
@@ -177,7 +191,7 @@ class DataTable < Entity
     #     - type (string)
     #         * Field type
     #         * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
-    #             date_time, number, boolean, checkbox, select, radio
+    #             date_time, number, boolean, checkbox, select, radio, route
     #     
     #     - order (int)
     #         * Order in which to display the field

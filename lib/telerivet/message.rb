@@ -72,14 +72,22 @@ module Telerivet
 #       * Read-only
 #   
 #   - route_params (Hash)
-#       * Route-specific parameters for the message. The parameters object may have keys
-#           matching the `phone_type` field of a phone (basic route) that may be used to send the
-#           message. The corresponding value is an object with route-specific parameters to use
-#           when the message is sent by that type of route.
+#       * Route-specific parameters for the message.
+#           
+#           When sending messages via chat apps such as WhatsApp, the route_params
+#           parameter can be used to send messages with app-specific features such as quick
+#           replies and link buttons.
+#           
+#           For more details, see [Route-Specific Parameters](#route_params).
 #       * Read-only
 #   
 #   - vars (Hash)
-#       * Custom variables stored for this message
+#       * Custom variables stored for this message. Variable names may be up to 32 characters
+#           in length and can contain the characters a-z, A-Z, 0-9, and _.
+#           Values may be strings, numbers, or boolean (true/false).
+#           String values may be up to 4096 bytes in length when encoded as UTF-8.
+#           Up to 100 variables are supported per object.
+#           Setting a variable to null will delete the variable.
 #       * Updatable via API
 #   
 #   - priority (int)
@@ -91,6 +99,13 @@ module Telerivet
 #       * A description of the error encountered while sending a message. (This field is
 #           omitted from the API response if there is no error message.)
 #       * Updatable via API
+#   
+#   - error_code
+#       * A route-specific error code encountered while sending a message. The error code
+#           values depend on the provider and may be described in the provider's API
+#           documentation. Error codes may be strings or numbers, depending on the provider. (This
+#           field is omitted from the API response if there is no error code.)
+#       * Read-only
 #   
 #   - external_id
 #       * The ID of this message from an external SMS gateway provider (e.g. Twilio or
@@ -408,6 +423,10 @@ class Message < Entity
 
     def error_message=(value)
         set('error_message', value)
+    end
+
+    def error_code
+        get('error_code')
     end
 
     def external_id
