@@ -9,7 +9,7 @@ module Telerivet
 class API
     attr_reader :num_requests
 
-    @@client_version = '1.8.0'
+    @@client_version = '1.8.1'
 
     #
     # Initializes a client handle to the Telerivet REST API.
@@ -47,7 +47,6 @@ class API
         if @session == nil
             @session = Net::HTTP.start(uri.host, uri.port,
               :use_ssl => @api_url.start_with?("https://"),
-              :ca_file => File.dirname(__FILE__) + '/cacert.pem',
               :read_timeout => 35,
               :open_timeout => 20,
             )
