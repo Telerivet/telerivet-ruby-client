@@ -73,6 +73,12 @@ module Telerivet
 #           numbers, or if the group membership changed while the broadcast was being sent.
 #       * Read-only
 #   
+#   - num_parts (number)
+#       * The total number of SMS parts that have been sent in this broadcast. The number of
+#           SMS parts does not include messages that are still queued, or messages that failed to
+#           send.
+#       * Read-only
+#   
 #   - message_type
 #       * Type of message sent from this broadcast
 #       * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
@@ -243,6 +249,10 @@ class Broadcast < Entity
 
     def estimated_count
         get('estimated_count')
+    end
+
+    def num_parts
+        get('num_parts')
     end
 
     def message_type

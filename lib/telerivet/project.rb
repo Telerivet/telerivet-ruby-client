@@ -2091,6 +2091,7 @@ class Project < Entity
     #             API:
     #             
     #             - incoming_message_webhook
+    #             - messaging_poll
     #             - incoming_message_script
     #             - contact_script
     #             - message_script
@@ -2138,6 +2139,13 @@ class Project < Entity
     #             ignored.
     #             </td></tr>
     #             </table>
+    #             <br />
+    #             
+    #             **messaging_poll**:
+    #             <br />
+    #             The configuration parameters for poll services are
+    #             not yet documented, but can be determined by creating a poll via the web app and
+    #             then retrieving the configuration via [service.getConfig](#Service.getConfig).
     #             <br />
     #         * Required
     #     
